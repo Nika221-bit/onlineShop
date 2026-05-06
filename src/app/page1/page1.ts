@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { ServiceApi1 } from '../service-api1';
 import { Product, ProductsInterface } from '../products-interface';
 
 @Component({
   selector: 'app-page1',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, NgIf],
   templateUrl: './page1.html',
   styleUrl: './page1.sass',
 })
