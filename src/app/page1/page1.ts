@@ -17,8 +17,19 @@ export class Page1 implements OnInit {
 
   ngOnInit(): void {
     this.onlineShopService.getProducts().subscribe((data: ProductsInterface) => {
-      console.log(data);
+      console.log('=== API Response ===' );
+      console.log(`Total Products: ${data.total}`);
+      console.log(`Page: ${data.page}`);
+      console.log(`Limit: ${data.limit}`);
+      console.log(`Retrieved: ${data.products.length} products`);
+      console.log('Products:', data.products);
+      
+      data.products.forEach((product, index) => {
+        console.log(`[${index + 1}] ${product.title}`, product);
+      });
+      
       this.products = data.products;
+      console.log('=== Rendering Complete ===');
     });
   }
 }
