@@ -17,6 +17,7 @@ export interface Product {
   issueDate: string;
   thumbnail: string;
   description: string;
+  rating: number;
 }
 
 export interface ProductsInterface {
