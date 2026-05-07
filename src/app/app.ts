@@ -4,9 +4,10 @@ import { Page1 } from "./page1/page1";
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, Page1],
   templateUrl: './app.html',
-  styleUrl: './app.sass'
+  styleUrls: ['./app.sass']
 })
 export class App {
   protected readonly title = signal('onlineShop');

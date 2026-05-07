@@ -1,6 +1,10 @@
 <section class="page1">
   <h1>Products</h1>
 
+  <p *ngIf="loading && !errorMessage">Loading products...</p>
+  <p *ngIf="!loading && errorMessage">{{ errorMessage }}</p>
+  <p *ngIf="!loading && !errorMessage && products.length === 0">No products found.</p>
+
   <article class="product-card" *ngFor="let product of products; index as i">
     <img src="{{ product.thumbnail }}" alt="{{ product.title }}" />
     <div class="product-info">
@@ -9,7 +13,7 @@
       <p><strong>Brand:</strong> {{ product.brand }}</p>
       <p><strong>Stock:</strong> {{ product.stock }}</p>
       <p><strong>Warranty:</strong> {{ product.warranty }} years</p>
-      <p><strong>rating</strong> {{ product.rating }} </p>
+      <p><strong>Rating:</strong> {{ product.rating }}</p>
     </div>
   </article>
 </section>

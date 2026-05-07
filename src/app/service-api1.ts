@@ -8,11 +8,13 @@ import { ProductsInterface } from './products-interface';
 })
 export class ServiceApi1 {
   private readonly apiUrl = 'https://api.everrest.educata.dev/shop/products/all';
-
+ 
   constructor(private http: HttpClient) {}
+  loading: boolean = false;
 
   getProducts(): Observable<ProductsInterface> {
     return this.http.get<ProductsInterface>(this.apiUrl);
+    this.loading = true;
   }
 }
 
