@@ -6,7 +6,7 @@ import { Product, ProductsInterface } from '../products-interface';
 @Component({
   selector: 'app-page1',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgFor,],
   templateUrl: './page1.html',
   styleUrl: './page1.sass',
 })
