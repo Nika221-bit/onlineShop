@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  padding: 2rem;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+p {
+  margin: 0;
+  padding: 1.75rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+  color: #102a43;
+  font-size: 1rem;
+  text-align: center;
+}
