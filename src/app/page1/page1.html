@@ -6,7 +6,7 @@
   <p *ngIf="!loading && !errorMessage && products.length === 0">No products found.</p>
 
   <article class="product-card" *ngFor="let product of products; index as i">
-     <img src="{{ product.images }}" /> 
+     <img [src]="product.thumbnail" [alt]="product.title" /> 
     <div class="product-info">
       <h2>{{ product.title }}</h2>
       <p>{{ product.description }}</p>
