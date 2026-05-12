@@ -6,7 +6,7 @@ import { Product, ProductsInterface } from '../products-interface';
 @Component({
   selector: 'app-page1',
   standalone: true,
-  imports: [NgFor, NgIf,],
+  imports: [],
   templateUrl: './page1.html',
   styleUrls: ['./page1.scss'],
 })
@@ -18,10 +18,6 @@ export class Page1 implements OnInit {
   constructor(private onlineShopService: ServiceApi1) {}
 
   ngOnInit(): void {
-    this.loadProducts();
-  }
-
-  loadProducts(): void {
     this.loading = true;
     this.errorMessage = '';
 
@@ -29,7 +25,17 @@ export class Page1 implements OnInit {
       next: (data: ProductsInterface) => {
         this.products = data.products;
         this.loading = false;
-        console.log('=== API Response ===', data);
+
+        console.log('=== API Response ===');
+        console.log(`Total Products: ${data.total}`);
+        console.log(`Page: ${data.page}`);
+        console.log(`Limit: ${data.limit}`);
+        console.log(`Retrieved: ${data.products.length} products`);
+
+        // თითოეული პროდუქტის thumbnail‑ის ლოგი
+        this.products.forEach(p =>
+          console.log(`Product: ${p.title}, Thumbnail: ${p.thumbnail}`)
+        );
       },
       error: (error: unknown) => {
         console.error('API load failed', error);
@@ -39,4 +45,5 @@ export class Page1 implements OnInit {
     });
   }
 }
+
 

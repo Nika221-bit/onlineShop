@@ -1,29 +1,17 @@
-export interface Price {
-  [key: string]: unknown;
-}
-
-export interface Category {
-  [key: string]: unknown;
-}
-
 export interface Product {
+  id: number;
   title: string;
-  brand: string;
-  price: Price;
-  stock: number;
-  images: string[];
-  category: Category;
-  warranty: number;
-  issueDate: string;
-  thumbnail: string;
   description: string;
+  brand: string;
+  stock: number;
+  warranty: number;
   rating: number;
+  thumbnail: string; // ფოტოს ბმული
 }
 
 export interface ProductsInterface {
-  total: number;
-  limit: number;
-  page: number;
-  skip: number;
   products: Product[];
+  total: number;
+  page: number;
+  limit: number;
 }

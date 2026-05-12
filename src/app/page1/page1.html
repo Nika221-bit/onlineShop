@@ -1,13 +1,24 @@
+<div class="upper">
+  
+</div>
+
+
 <section class="page1">
-  <h1>სიახლეები</h1>
+ 
 
-  <p *ngIf="loading && !errorMessage">Loading products...</p>
-  <p *ngIf="!loading && errorMessage">{{ errorMessage }}</p>
-  <p *ngIf="!loading && !errorMessage && products.length === 0">No products found.</p>
+  @if (loading && !errorMessage) {
+    <p>Loading products...</p>
+  }
+  @if (!loading && errorMessage) {
+    <p>{{ errorMessage }}</p>
+  }
+  @if (!loading && !errorMessage && products.length === 0) {
+    <p>No products found.</p>
+  }
 
-  <div class="products-container">
-    <article class="product-card" *ngFor="let product of products; index as i">
-      <img [src]="product.thumbnail" [alt]="product.title" /> 
+  @for (product of products; track product.id) {
+    <article class="product-card">
+      <img [src]="product.thumbnail" [alt]="product.title" />
       <div class="product-info">
         <h2>{{ product.title }}</h2>
         <p>{{ product.description }}</p>
@@ -17,5 +28,5 @@
         <p><strong>Rating:</strong> {{ product.rating }}</p>
       </div>
     </article>
-  </div>
+  }
 </section>
