@@ -2,14 +2,14 @@
 .upper {
   width: 100%;
   height: 300px;
-  // background-image: url('./R (7).jpg'); /* სურათის გზა კომპონენტის ფოლდერში */
+  background-image: url('./R (7).jpg'); /* სურათის გზა კომპონენტის ფოლდერში */
   background-size: cover;       /* რომ სრულად მოერგოს */
   background-position: center;  /* ცენტრში განთავსდეს */
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #007acc;
+
   
 }
 

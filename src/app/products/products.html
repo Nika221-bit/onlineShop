@@ -1,1 +1,48 @@
-<p>products works!</p>
+<div class="filters">
+  <h2>Product Filters</h2>
+  <div class="filter-group">
+    <label for="titleFilter">Title:</label>
+    <input id="titleFilter" type="text" [(ngModel)]="searchTitle" (input)="applyFilters()" placeholder="Search by title">
+  </div>
+  <div class="filter-group">
+    <label for="brandFilter">Brand:</label>
+    <input id="brandFilter" type="text" [(ngModel)]="searchBrand" (input)="applyFilters()" placeholder="Search by brand">
+  </div>
+  <div class="filter-group">
+    <label for="categoryFilter">Category:</label>
+    <input id="categoryFilter" type="text" [(ngModel)]="searchCategory" (input)="applyFilters()" placeholder="Search by category">
+  </div>
+  <button (click)="clearFilters()">Clear Filters</button>
+</div>
+
+<div class="products-container">
+  <h1>All Products</h1>
+
+  @if (loading) {
+    <p>Loading products...</p>
+  }
+
+  @if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  }
+
+  @if (!loading && !errorMessage && filteredProducts.length === 0) {
+    <p>No products found.</p>
+  }
+
+  @for (product of filteredProducts; track product.id) {
+    <div class="product-card">
+      <h3>ID: {{ product.id }}</h3>
+      <img [src]="product.thumbnail" [alt]="product.title" />
+      <div class="product-info">
+        <h4>{{ product.title }}</h4>
+        <p>{{ product.description }}</p>
+        <p><strong>Brand:</strong> {{ product.brand }}</p>
+        <p><strong>Category:</strong> {{ product.category }}</p>
+        <p><strong>Price:</strong> ${{ product.price }}</p>
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Rating:</strong> {{ product.rating }}</p>
+      </div>
+    </div>
+  }
+</div>
