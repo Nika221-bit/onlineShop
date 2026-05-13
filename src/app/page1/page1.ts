@@ -6,7 +6,7 @@ import { Product, ProductsInterface } from '../products-interface';
 @Component({
   selector: 'app-page1',
   standalone: true,
-  imports: [],
+  imports: [NgFor, NgIf],
   templateUrl: './page1.html',
   styleUrls: ['./page1.scss'],
 })
@@ -44,6 +44,7 @@ export class Page1 implements OnInit {
       },
     });
   }
+  
 }
 
 
