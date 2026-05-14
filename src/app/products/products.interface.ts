@@ -1,14 +1,22 @@
 export interface Product {
-  id: number;
+  _id: string;
   title: string;
   description: string;
-  brand: string;
-  category: string;
-  price: number;
-  stock: number;
-  rating: number;
+  category: {
+    name: string;
+  };
+  price: {
+    current: number;
+    currency: string;
+    beforeDiscount?: number;
+    discountPercentage?: number;
+  };
   thumbnail: string;
+  rating: number;
+  brand?: string;
+  stock?: number;
   warranty?: string;
+  [key: string]: unknown;
 }
 
 export interface ProductsInterface {

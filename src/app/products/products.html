@@ -1,48 +1,100 @@
-<div class="filters">
-  <h2>Product Filters</h2>
-  <div class="filter-group">
-    <label for="titleFilter">Title:</label>
-    <input id="titleFilter" type="text" [(ngModel)]="searchTitle" (input)="applyFilters()" placeholder="Search by title">
-  </div>
-  <div class="filter-group">
-    <label for="brandFilter">Brand:</label>
-    <input id="brandFilter" type="text" [(ngModel)]="searchBrand" (input)="applyFilters()" placeholder="Search by brand">
-  </div>
-  <div class="filter-group">
-    <label for="categoryFilter">Category:</label>
-    <input id="categoryFilter" type="text" [(ngModel)]="searchCategory" (input)="applyFilters()" placeholder="Search by category">
-  </div>
-  <button (click)="clearFilters()">Clear Filters</button>
-</div>
+<div class="shop-container">
+  <!-- Navbar -->
+  <header class="navbar">
+    <h1>Online Shop</h1>
+  </header>
 
-<div class="products-container">
-  <h1>All Products</h1>
+  <!-- Filters -->
+  <section class="filters">
+    <h2>Filters</h2>
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
 
-  @if (loading) {
-    <p>Loading products...</p>
-  }
+    <div class="filter-group">
+      <label for="searchTitle">Title</label>
+      <input
+        id="searchTitle"
+        type="text"
+        [(ngModel)]="searchTitle"
+        (ngModelChange)="applyFilters()"
+        placeholder="Search by title"
+      />
+    </div>
 
-  @if (errorMessage) {
-    <p class="error">{{ errorMessage }}</p>
-  }
+    <div class="filter-group">
+      <label for="brandSelect">Brand</label>
+      <select id="brandSelect" [(ngModel)]="searchBrand" (change)="applyFilters()">
+        <option value="">All brands</option>
+        <option *ngFor="let brand of brands" [value]="brand">{{ brand }}</option>
+      </select>
+    </div>
 
-  @if (!loading && !errorMessage && filteredProducts.length === 0) {
-    <p>No products found.</p>
-  }
+    <div class="filter-group">
+      <label for="categorySelect">Category</label>
+      <select id="categorySelect" [(ngModel)]="searchCategory" (change)="applyFilters()">
+        <option value="">All categories</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+    </div>
 
-  @for (product of filteredProducts; track product.id) {
-    <div class="product-card">
-      <h3>ID: {{ product.id }}</h3>
-      <img [src]="product.thumbnail" [alt]="product.title" />
-      <div class="product-info">
-        <h4>{{ product.title }}</h4>
-        <p>{{ product.description }}</p>
-        <p><strong>Brand:</strong> {{ product.brand }}</p>
-        <p><strong>Category:</strong> {{ product.category }}</p>
-        <p><strong>Price:</strong> ${{ product.price }}</p>
-        <p><strong>Stock:</strong> {{ product.stock }}</p>
-        <p><strong>Rating:</strong> {{ product.rating }}</p>
+    <button type="button" (click)="clearFilters()">Clear filters</button>
+  </section>
+
+  <!-- Products -->
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <ng-container *ngIf="!loading">
+    <div *ngIf="filteredProducts.length === 0" class="loading">
+      No products match the selected filters.
+    </div>
+
+    <div *ngIf="filteredProducts.length > 0" class="products-grid">
+      <div
+        *ngFor="let product of filteredProducts"
+        class="product-card"
+      >
+        <img [src]="product.thumbnail" [alt]="product.title" />
+        <div class="product-info">
+          <p class="category">{{ product.category.name }}</p>
+          <h3>{{ product.title }}</h3>
+          <p class="description">{{ product.description }}</p>
+
+          <div class="product-footer">
+            <div class="price-block">
+              <span class="price">
+                {{ product.price.current }} {{ product.price.currency }}
+              </span>
+              <span *ngIf="product.price.discountPercentage != null && product.price.discountPercentage > 0" class="before-discount">
+                {{ product.price.beforeDiscount }}
+              </span>
+              <span *ngIf="product.price.discountPercentage != null && product.price.discountPercentage > 0" class="discount">
+                -{{ product.price.discountPercentage }}%
+              </span>
+            </div>
+            <span class="rating">&#11088; {{ product.rating | number: '1.1-1' }}</span>
+          </div>
+
+          <button class="add-to-cart-btn" (click)="addToCart(product)">
+            + Add to Cart
+          </button>
+        </div>
       </div>
     </div>
-  }
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="loadPage(1)" [disabled]="currentPage === 1">&laquo;</button>
+      <button (click)="loadPage(currentPage - 1)" [disabled]="currentPage === 1">&lsaquo;</button>
+      <span *ngIf="pages[0] > 1" class="dots">...</span>
+      <button
+        *ngFor="let page of pages"
+        (click)="loadPage(page)"
+        [class.active]="page === currentPage"
+      >
+        {{ page }}
+      </button>
+      <span *ngIf="pages[pages.length - 1] < totalPages" class="dots">...</span>
+      <button (click)="loadPage(currentPage + 1)" [disabled]="currentPage === totalPages">&rsaquo;</button>
+      <button (click)="loadPage(totalPages)" [disabled]="currentPage === totalPages">&raquo;</button>
+    </div>
+    <p class="page-info">{{ currentPage }} / {{ totalPages }}</p>
+  </ng-container>
 </div>

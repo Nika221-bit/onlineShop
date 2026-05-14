@@ -1,1 +1,33 @@
-<p>basket works!</p>
+<div class="basket-container">
+  <h1>Your Basket</h1>
+
+  <div *ngIf="cartItems.length === 0" class="empty-basket">
+    <p>Your basket is empty.</p>
+  </div>
+
+  <div *ngIf="cartItems.length > 0" class="basket-content">
+    <div class="basket-items">
+      <div *ngFor="let item of cartItems" class="basket-item">
+        <img [src]="item.product.thumbnail" [alt]="item.product.title" />
+        <div class="item-details">
+          <h3>{{ item.product.title }}</h3>
+          <p>{{ item.product.price.current }} {{ item.product.price.currency }}</p>
+          <div class="quantity-controls">
+            <button (click)="changeQuantity(item.product._id, -1)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="changeQuantity(item.product._id, 1)">+</button>
+          </div>
+        </div>
+        <button class="remove-btn" (click)="removeFromCart(item.product._id)">Remove</button>
+      </div>
+    </div>
+
+    <div class="basket-footer">
+      <div class="total">
+        <strong>Total: {{ cartTotal | number: '1.2-2' }} USD</strong>
+      </div>
+      <button class="clear-btn" (click)="clearCart()">Clear Basket</button>
+      <button class="checkout-btn">Checkout</button>
+    </div>
+  </div>
+</div>
