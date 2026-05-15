@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
-interface SignUpData {
+export type UserGender = 'MALE' | 'FEMALE' | 'OTHER';
+
+export interface SignUpData {
   firstName: string;
   lastName: string;
   age: number;
@@ -12,8 +14,10 @@ interface SignUpData {
   phone: string;
   zipcode: string;
   avatar: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  gender: UserGender;
 }
+
+export type ProfileUpdateData = Omit<SignUpData, 'password'>;
 
 interface SignInData {
   email: string;
@@ -24,8 +28,27 @@ interface AuthResponse {
   token?: string;
   access_token?: string;
   refresh_token?: string;
-  user?: any;
-  [key: string]: any;
+  user?: UserProfile;
+  [key: string]: unknown;
+}
+
+export interface UserProfile {
+  _id?: string;
+  firstName?: string;
+  lastName?: string;
+  age?: number;
+  email: string;
+  address?: string;
+  role?: string;
+  zipcode?: string;
+  avatar?: string;
+  gender?: UserGender | string;
+  phone?: string;
+  verified?: boolean;
+  cartID?: string;
+  chatIds?: string[];
+  iat?: number;
+  exp?: number;
 }
 
 @Injectable({
@@ -33,7 +56,7 @@ interface AuthResponse {
 })
 export class AuthService {
   private apiUrl = 'https://api.everrest.educata.dev/auth';
-  private currentUserSubject = new BehaviorSubject<any>(null);
+  private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
@@ -44,7 +67,11 @@ export class AuthService {
     const user = localStorage.getItem('currentUser');
     const token = localStorage.getItem('token');
     if (user && token) {
-      this.currentUserSubject.next(JSON.parse(user));
+      try {
+        this.currentUserSubject.next(JSON.parse(user) as UserProfile);
+      } catch {
+        this.clearAuth();
+      }
     }
   }
 
@@ -57,20 +84,32 @@ export class AuthService {
   }
 
   signOut(): Observable<string> {
-    const result = this.http.post<string>(`${this.apiUrl}/sign_out`, {});
-    result.subscribe(() => {
-      this.clearAuth();
-    });
-    return result;
+    return this.http.post<string>(`${this.apiUrl}/sign_out`, {}).pipe(tap(() => this.clearAuth()));
   }
 
-  setAuth(token: string, user: any, refreshToken?: string): void {
+  getCurrentUser(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(this.apiUrl).pipe(tap((user) => this.setCurrentUser(user)));
+  }
+
+  updateProfile(data: ProfileUpdateData): Observable<UserProfile> {
+    return this.http.patch<UserProfile>(`${this.apiUrl}/update`, data).pipe(tap((user) => this.setCurrentUser(user)));
+  }
+
+  setAuth(token: string, user: UserProfile, refreshToken?: string): void {
     localStorage.setItem('token', token);
     if (refreshToken) {
       localStorage.setItem('refreshToken', refreshToken);
     }
+    this.setCurrentUser(user);
+  }
+
+  setCurrentUser(user: UserProfile): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
+  }
+
+  getCurrentUserSnapshot(): UserProfile | null {
+    return this.currentUserSubject.value;
   }
 
   clearAuth(): void {
@@ -84,7 +123,7 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  getUserFromToken(token: string): any | null {
+  getUserFromToken(token: string): UserProfile | null {
     try {
       const payload = token.split('.')[1];
       if (!payload) {
@@ -92,8 +131,11 @@ export class AuthService {
       }
 
       const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
-      const decoded = atob(normalized);
-      return JSON.parse(decoded);
+      const padding = (4 - (normalized.length % 4)) % 4;
+      const decoded = atob(normalized.padEnd(normalized.length + padding, '='));
+      const parsedPayload = JSON.parse(decoded) as Partial<UserProfile>;
+
+      return parsedPayload.email ? (parsedPayload as UserProfile) : null;
     } catch {
       return null;
     }

@@ -93,4 +93,9 @@
   <button type="submit" [disabled]="loading">
     {{ loading ? 'Creating account...' : 'Create account' }}
   </button>
+
+  <p class="auth-switch">
+    Already verified?
+    <a routerLink="/sign-in">Sign in and open profile</a>
+  </p>
 </form>

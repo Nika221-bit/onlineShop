@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
 
 const DEFAULT_AVATAR_URL = 'https://api.dicebear.com/7.x/pixel-art/svg?seed=OnlineShop';
@@ -10,7 +11,7 @@ const PHONE_API_PATTERN = /^\+\d{8,15}$/;
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './sign-up.html',
   styleUrl: './sign-up.scss',
 })
@@ -70,7 +71,7 @@ export class SignUp {
 
     this.authService.signUp(payload).subscribe({
       next: () => {
-        this.successMessage = 'Account created. Check your email for verification.';
+        this.successMessage = 'Account created. Verify your email, then sign in to open your profile.';
         this.form.reset({
           firstName: '',
           lastName: '',

@@ -1,0 +1,139 @@
+<section class="profile-page">
+  <ng-container *ngIf="hasSession; else signInPrompt">
+    <div class="profile-shell">
+      <header class="profile-hero" *ngIf="user as profile; else loadingProfile">
+        <img class="avatar" [src]="profile.avatar || fallbackAvatarUrl" [alt]="displayName(profile)" />
+
+        <div class="profile-title">
+          <p class="eyebrow">Profile</p>
+          <h2>{{ displayName(profile) }}</h2>
+          <p>{{ profile.email }}</p>
+          <span class="status" [class.verified]="profile.verified">
+            {{ profile.verified ? 'Verified' : 'Email not verified' }}
+          </span>
+        </div>
+
+        <button type="button" class="ghost-button" (click)="signOut()" [disabled]="signOutLoading">
+          {{ signOutLoading ? 'Signing out...' : 'Sign out' }}
+        </button>
+      </header>
+
+      <ng-template #loadingProfile>
+        <header class="profile-hero">
+          <div class="avatar placeholder"></div>
+          <div class="profile-title">
+            <p class="eyebrow">Profile</p>
+            <h2>{{ loading ? 'Loading profile...' : 'Profile' }}</h2>
+            <p>Sign-in data is being checked.</p>
+          </div>
+        </header>
+      </ng-template>
+
+      <p class="message success" *ngIf="successMessage">{{ successMessage }}</p>
+      <p class="message error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <form class="profile-form" [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-grid">
+          <div class="field">
+            <label for="profile-first-name">First name</label>
+            <input id="profile-first-name" type="text" formControlName="firstName" autocomplete="given-name" />
+            <span class="hint" *ngIf="form.controls.firstName.touched && form.controls.firstName.invalid">
+              First name is required.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="profile-last-name">Last name</label>
+            <input id="profile-last-name" type="text" formControlName="lastName" autocomplete="family-name" />
+            <span class="hint" *ngIf="form.controls.lastName.touched && form.controls.lastName.invalid">
+              Last name is required.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="profile-age">Age</label>
+            <input id="profile-age" type="number" formControlName="age" min="13" max="120" />
+            <span class="hint" *ngIf="form.controls.age.touched && form.controls.age.invalid">
+              Age must be between 13 and 120.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="profile-gender">Gender</label>
+            <select id="profile-gender" formControlName="gender">
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="profile-email">Email</label>
+            <input id="profile-email" type="email" formControlName="email" autocomplete="email" />
+            <span class="hint" *ngIf="form.controls.email.touched && form.controls.email.invalid">
+              Enter a valid email address.
+            </span>
+          </div>
+
+          <div class="field full">
+            <label for="profile-address">Address</label>
+            <input id="profile-address" type="text" formControlName="address" autocomplete="street-address" />
+            <span class="hint" *ngIf="form.controls.address.touched && form.controls.address.invalid">
+              Address is required.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="profile-phone">Phone</label>
+            <input
+              id="profile-phone"
+              type="tel"
+              formControlName="phone"
+              autocomplete="tel"
+              placeholder="+995599123456"
+              pattern="[+\d\s\-()]{8,20}"
+            />
+            <span class="hint" *ngIf="form.controls.phone.touched && form.controls.phone.invalid">
+              Phone is required. Example: +995599123456.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="profile-zipcode">Zip code</label>
+            <input id="profile-zipcode" type="text" formControlName="zipcode" autocomplete="postal-code" />
+            <span class="hint" *ngIf="form.controls.zipcode.touched && form.controls.zipcode.invalid">
+              Zip code is required.
+            </span>
+          </div>
+
+          <div class="field full">
+            <label for="profile-avatar">Avatar URL</label>
+            <input id="profile-avatar" type="url" formControlName="avatar" placeholder="https://..." />
+            <span class="hint neutral">Leave empty to use a default avatar.</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="secondary-button" (click)="loadProfile()" [disabled]="loading || saving">
+            {{ loading ? 'Refreshing...' : 'Refresh' }}
+          </button>
+          <button type="submit" [disabled]="loading || saving">
+            {{ saving ? 'Saving...' : 'Save profile' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </ng-container>
+
+  <ng-template #signInPrompt>
+    <div class="empty-state">
+      <p class="eyebrow">Profile</p>
+      <h2>Your profile will appear after sign in.</h2>
+      <p>Create an account, verify your email, then sign in to see and update your profile.</p>
+      <div class="empty-actions">
+        <a class="primary-link" routerLink="/sign-in">Sign in</a>
+        <a class="secondary-link" routerLink="/sign-up">Create account</a>
+      </div>
+    </div>
+  </ng-template>
+</section>

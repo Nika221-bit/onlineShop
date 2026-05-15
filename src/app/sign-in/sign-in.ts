@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { Router, RouterLink } from '@angular/router';
+import { catchError, finalize, of, switchMap, throwError } from 'rxjs';
+import { AuthService, UserProfile } from '../auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -14,6 +15,7 @@ import { AuthService } from '../auth.service';
 export class SignIn {
   private readonly authService = inject(AuthService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -35,23 +37,37 @@ export class SignIn {
 
     this.loading = true;
 
-    this.authService.signIn(this.form.getRawValue()).subscribe({
-      next: (response) => {
-        const token = response.access_token ?? response.token;
-        const user = response.user ?? (token ? this.authService.getUserFromToken(token) : null);
+    this.authService
+      .signIn(this.form.getRawValue())
+      .pipe(
+        switchMap((response) => {
+          const token = response.access_token ?? response.token;
+          if (!token) {
+            return throwError(() => new Error('Sign in response did not include an access token.'));
+          }
 
-        if (token) {
-          this.authService.setAuth(token, user ?? { email: this.form.controls.email.value }, response.refresh_token);
-        }
+          const fallbackUser =
+            response.user ??
+            (token ? this.authService.getUserFromToken(token) : null) ??
+            ({ email: this.form.controls.email.value } satisfies UserProfile);
 
-        this.successMessage = 'You are signed in successfully.';
-        this.loading = false;
-      },
-      error: (error: unknown) => {
-        this.errorMessage = this.getErrorMessage(error, 'Sign in failed. Check your email and password.');
-        this.loading = false;
-      },
-    });
+          this.authService.setAuth(token, fallbackUser, response.refresh_token);
+
+          return this.authService.getCurrentUser().pipe(catchError(() => of(fallbackUser)));
+        }),
+        finalize(() => {
+          this.loading = false;
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.successMessage = 'You are signed in successfully.';
+          void this.router.navigate(['/profile']);
+        },
+        error: (error: unknown) => {
+          this.errorMessage = this.getErrorMessage(error, 'Sign in failed. Check your email and password.');
+        },
+      });
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
